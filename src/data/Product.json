@@ -1,0 +1,20 @@
+[
+	{
+		"id": 1,
+		"tittle": "pantalon nike SB",
+		"description": "pantalon nike",
+		"price": 8000,
+		"thumbnail": "imagen producto",
+		"code": 12345,
+		"stock": 25
+	},
+	{
+		"id": 2,
+		"tittle": "remera nike SB",
+		"description": "remera nike",
+		"price": 2000,
+		"thumbnail": "imagen producto",
+		"code": 123,
+		"stock": 25
+	}
+]
