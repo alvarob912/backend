@@ -1,6 +1,9 @@
 const {Router} = require("express")
 const ProductManager = require("../../daos/fileManager/manager")
 const uploader = require("../../utils")
+const ProductManagerMongo = require('../../daos/mongoManager/manager')
+const CartManagerMongo = require('../../daos/mongoManager/manager')
+
 
 const messageModel = require('../../daos/models/message.models')
 const productModel = require('../../daos/models/products.models')
@@ -9,6 +12,42 @@ const productModel = require('../../daos/models/products.models')
 const router = Router();
 
 const productManager = new ProductManager('./src/data/products.json')
+const productMongoService = new ProductManagerMongo()
+const cartMongoService = new CartManagerMongo()
+
+router.get('/products', async (req, res) => {
+    try {
+        const products = await productMongoService.getProducts(req.query)
+        res.render('index', {
+            title: "E-commerce",
+            products: products.docs
+        })
+    } catch (error) {
+        res.status(500).send({
+            status: "error",
+            error: error.message
+        })
+    }
+})
+
+router.get('/cart/:cid', async (req, res) => {
+    const cartId = req.params.cid 
+    try {
+        const cart = await cartMongoService.getCartById(cartId)
+        res.render('cart', {
+            title: "Cart",
+            products: cart.products,
+            cartId: cart._id
+        })
+    } catch (error) {
+        res.status(500).send({
+            status: "error",
+            error: error.message
+        })
+    }
+})
+
+
 
 router.get('/', async (req, res)=>{
     const products = await productManager.getProducts()

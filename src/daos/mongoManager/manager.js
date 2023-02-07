@@ -130,28 +130,29 @@ class productMongoManager{
         }
     };
 
-    async deleteProductToCart(cid, pid) {
+    async deleteProductFromCart(cartId, productId){
         try {
-            const deleteProduct = await cartModel.findOneAndUpdate(
-
-                { _id: cid, "products.productId": pid },
-                { $pull: { "products": { "productId": pid } } },
-            );
-            return deleteProduct
-
-        }
-        catch (error) {
+            const cart = await this.getCartById(cartId)
+            const productToDelete = cart.products.find(product => product.product._id == productId)
+            const index = cart.products.indexOf(productToDelete)
+            if(index < 0){
+                throw new Error('Product not found')
+            }
+            cart.products.splice(index, 1)
+            const result = cartModel.updateOne({_id:cartId}, cart)
+            return result
+        } catch (error) {
             throw new Error(error.message)
         }
-    };
+    }
 
-    async deleteCart(id) {
+    async deleteAllProducts(cartId){
         try {
-            const deletedProduct = await cartModel.deleteOne({ _id: id })
-            console.log(`product deleted`)
-            return deletedProduct
-        }
-        catch (error) {
+            const cart = await this.getCartById(cartId)
+            cart.products = []
+            const result = cartModel.updateOne({_id:cartId}, cart)
+            return result
+        } catch (error) {
             throw new Error(error.message)
         }
     }

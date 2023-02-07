@@ -7,11 +7,18 @@ const router = Router();
 
 router.get("/", async(req,res)=>{
     try {
-        const data = await productService.getProducts();
-        res.status(200).json({
-            prod:data,
-            status:"EXITOSO"
-        })
+        const products = await productService.getProducts(req.query)
+        return res.send({
+            status: 'success',
+            payload: products.docs,
+            totalPages: products.totalPages,
+            prevPage: products.prevPage,
+            nextPage: products.nextPage,
+            page: products.page,
+            hasPrevPage: products.hasPrevPage,
+            hasNextPage: products.hasNextPage,
+            prevLink: null,
+            nexLink: null})
     } catch (error) {
         res.stauts(400).json({
             message:error,
