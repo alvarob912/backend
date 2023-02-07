@@ -1,5 +1,4 @@
-import { writeFile, readFile } from 'fs/promises';
-import { existsSync } from 'fs';
+const fs = require("fs/promises");
 
 class ProductManager {
     constructor(path){
@@ -33,16 +32,10 @@ class ProductManager {
     
     async getProducts() {
         try{
-            if (existsSync(this.path)){
-                const products = await readFile(this.path, 'utf-8')
-                if(products.length > 0){
-                    const parsedProducts = JSON.parse(products)
-                    return parsedProducts
-                }
-                else return []
+                const data = await fs.readFile(this.path, "utf-8");
+                const items = await JSON.parse(data);
+                return items;
             }
-            else return []
-        }
         catch(error){
             console.log(error.message)
         }
@@ -103,6 +96,55 @@ class ProductManager {
             console.log(error.message)
         }
     }
+
+
+
+
+
+    async createCart() {
+        let cart = await this.getProducts();
+        const newCart = { id: cart.length + 1, products: [] };
+        cart.push(newCart);
+        await this.writeFile(cart);
+        return cart;
+    }
+
+    async addToCart (pid, cid){
+        let cart = await this.getProducts();
+
+        const order = cart.find((or) => or.orderId === cid)
+        if(order){
+            const prodExist = order.products.find((prod) => prod.prodId === pid);
+
+            if(prodExist){
+                const orderPos = cart.findIndex((order) => order.orderId === cid);
+                const updateProd = cart[orderPos].products.find((prod) => prod.prodId === pid);
+                const prodPos = cart[orderPos].products.findIndex((prod) => prod.prodId === pid);
+
+                cart[orderPos].products[prodPos].quantity= updateProd.quantity + 1;
+
+                await this.writeFile(cart);
+                return cart;
+            } else {
+                const newProd = {prodId : pid, quantity : 1}
+                const orderPos = cart.findIndex((or) => or.orderId === cid)
+
+                if(orderPos <=0){
+                    cart[orderPos].products.push(newProd);
+                    await this.writeFile(cart);
+                    return cart;
+                }
+            }
+        } else {
+            const newOrder = {
+                orderId: cart.length + 1,
+                products : [{prodId : pid, quantity: 1}],
+            };
+            cart.push(newOrder);
+            await this.writeFile(cart);
+            return cart;
+        }
+    }
 }
 
-export default ProductManager;
+module.exports = ProductManager;

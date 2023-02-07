@@ -1,0 +1,35 @@
+<div>
+    <h1 id="main-title">Products</h1>
+    <div id="product-list-container">
+        {{#each products}}
+            <div id="product-item">
+                <p id="title">{{title}}</p>
+                <p>{{description}}</p>
+                <p>${{price}}</p>
+                {{#if havePics}}
+                    <div class="thumbnail-container">
+                        <img src="../../statics/img/{{thumbnails.0.originalName}}" alt="">
+                    </div>
+                {{else}}
+                    <p id="no-image">no image</p>
+                {{/if}}
+            </div>
+        {{/each}}
+    </div>
+    <form action="/realtimeproducts" id="add-realtimeproducts-form" class="add-product-form" method="post" enctype="multipart/form-data">
+        <h2>Add product</h2>
+        <input type="text" placeholder="title" name="title">
+        <input type="text" placeholder="description" name="description" required>
+        <input type="text" placeholder="code" name="code" required>
+        <input type="number" placeholder="price" name="price" required>
+        <input type="text" placeholder="status" name="status" required>
+        <input type="text" placeholder="category" name="category" required>
+        <input type="file" name="files" multiple>
+        <label for="input-status"><input type="checkbox" name="status" id="input-status">Available</label>
+        <input type="submit" value="Send">
+    </form>
+</div>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="statics/js/realTimeProducts.js"></script>

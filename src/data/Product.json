@@ -6,7 +6,9 @@
 		"price": 8000,
 		"thumbnail": "imagen producto",
 		"code": 12345,
-		"stock": 25
+		"stock": 25,
+		"status":"true",
+		"cateory": "category"
 	},
 	{
 		"id": 2,
@@ -15,6 +17,8 @@
 		"price": 2000,
 		"thumbnail": "imagen producto",
 		"code": 123,
-		"stock": 25
+		"stock": 25,
+		"status":"true",
+		"cateory": "category"
 	}
 ]
