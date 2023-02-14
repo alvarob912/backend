@@ -2,13 +2,44 @@ const ProductModel = require ("../models/products.models")
 const cartModel = require("../models/cart.models")
 
 class productMongoManager{
-    async getProducts() {
-        try{
-                const prod = ProductModel.find();
-                return prod;
+    async getProducts({limit, page, query, sort}) {
+        try {
+            let filter
+            
+            if(!query){
+                filter =  {}
+            }else if(query == 'true'){
+                filter = {status: true}
+            }else if(query== 'false'){
+                filter = {status: false}
+            }else{
+                filter = {category: query}
             }
-        catch(error){
-            throw new Error(`no se pudo leer el archivo ${error}`)
+
+            const options = {
+                sort: (sort ? {price: sort} : {}),
+                limit: limit || 10,
+                page: page || 1,
+                lean: true
+            }
+
+            const products = await ProductModel.paginate(filter,options)
+            
+            // const product = await ProductModel.aggregate([
+            //     {
+            //         $match: (query != undefined? {category: query}: {})
+            //     },
+            //     {
+            //         $sort:{ price: sort }
+            //     },
+            //     {
+            //         $limit: limit
+            //     }
+            // ])
+
+            return products
+        } catch (error) {
+            throw new Error(error.message)
         }
     }
 
