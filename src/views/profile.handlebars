@@ -1,0 +1,15 @@
+<div class="container">
+  <div class="alert alert-info" role="alert">
+    <dl class="row ps-5">
+        <dt class="col-sm-4">Nombre</dt>
+        <dd class="col-sm-8 text-center">{{user.name}} {{user.lastname}}</dd>
+
+        <dt class="col-sm-4">Edad</dt>
+        <dd class="col-sm-8 text-center">{{user.age}}</dd>
+
+        <dt class="col-sm-4">Email</dt>
+        <dd class="col-sm-8 text-center">{{user.email}}</dd>
+    </dl>
+  </div>
+  <a href="/"><button type="button" class="btn btn-danger" onclick="return logout()">Logout</button></a>
+</div>

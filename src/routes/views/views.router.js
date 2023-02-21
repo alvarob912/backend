@@ -1,6 +1,6 @@
 const { Router } = require("express")
 const ProductManager = require("../../daos/fileManager/manager")
-const uploader = require("../../utils")
+const uploader = require("../../utils/utils")
 const ProductManagerMongo = require('../../daos/mongoManager/manager')
 const CartManagerMongo = require('../../daos/mongoManager/manager')
 const { sessionMiddleware } = require('../../middlewares/session.middleware')
@@ -18,54 +18,53 @@ const productMongoService = new ProductManagerMongo()
 const cartMongoService = new CartManagerMongo()
 
 router.get('/', sessionMiddleware, (req, res)=>{
-    res.redirect('/login')
+    res.render('login')
 })
 
 router.get('/register', sessionMiddleware, (req, res)=>{
-    res.render('register', {
-        title: 'Sing Up!'
-    })
+    res.render('register')
 })
 
+router.get('/profile', authMiddleware, async (req, res) => {
+    const user = await req.session.user;
+    res.render('profile', { user });
+});
 router.get('/login', sessionMiddleware, (req, res)=>{
-    res.render('login', {
-        title: 'Login'
-    })
-})
+    res.render('login')})
 
-router.get('/products', authMiddleware , async (req, res) => {
-    try {
-        const user = req.session.user
-        const products = await productMongoService.getProducts(req.query)
-        res.render('index', {
-            title: "E-commerce",
-            products: products.docs,
-            user : user
-        })
-    } catch (error) {
-        res.status(500).send({
-            status: "error",
-            error: error.message
-        })
-    }
-})
+// router.get('/products', authMiddleware , async (req, res) => {
+//     try {
+//         const user = req.session.user
+//         const products = await productMongoService.getProducts(req.query)
+//         res.render('index', {
+//             title: "E-commerce",
+//             products: products.docs,
+//             user : user
+//         })
+//     } catch (error) {
+//         res.status(500).send({
+//             status: "error",
+//             error: error.message
+//         })
+//     }
+// })
 
-router.get('/cart/:cid', async (req, res) => {
-    const cartId = req.params.cid 
-    try {
-        const cart = await cartMongoService.getCartById(cartId)
-        res.render('cart', {
-            title: "Cart",
-            products: cart.products,
-            cartId: cart._id
-        })
-    } catch (error) {
-        res.status(500).send({
-            status: "error",
-            error: error.message
-        })
-    }
-})
+// router.get('/cart/:cid', async (req, res) => {
+//     const cartId = req.params.cid 
+//     try {
+//         const cart = await cartMongoService.getCartById(cartId)
+//         res.render('cart', {
+//             title: "Cart",
+//             products: cart.products,
+//             cartId: cart._id
+//         })
+//     } catch (error) {
+//         res.status(500).send({
+//             status: "error",
+//             error: error.message
+//         })
+//     }
+// })
 
 
 
@@ -85,43 +84,43 @@ router.get('/cart/:cid', async (req, res) => {
 //     })
 // })
 
-router.get('/realtimeproducts', async (req, res)=>{
-    const products = await productManager.getProducts()
-    const limit = req.query.limit
-    if(!limit){
-        return res.render('realTimeProducts',{
-            products: products,
-            title: 'Real Time Products'
-        })
-    }
-    const limitedProducts = products.slice(0,limit)
-    res.render('realTimeProducts',{
-        products: limitedProducts,
-        title: 'Real Time Products'
-    })
-})
+// router.get('/realtimeproducts', async (req, res)=>{
+//     const products = await productManager.getProducts()
+//     const limit = req.query.limit
+//     if(!limit){
+//         return res.render('realTimeProducts',{
+//             products: products,
+//             title: 'Real Time Products'
+//         })
+//     }
+//     const limitedProducts = products.slice(0,limit)
+//     res.render('realTimeProducts',{
+//         products: limitedProducts,
+//         title: 'Real Time Products'
+//     })
+// })
 
-router.post('/realtimeproducts', uploader.array('files'), async (req, res)=>{
-    const newProduct = req.body
-    const socket = req.app.get('socket')
-    if(!newProduct){
-        return res.status(400).send({
-            error: 'missing product'
-        })
-    }
-    if(req.files){
-        const paths = req.files.map(file => {
-            return {path: file.path,
-            originalName: file.originalname    
-            }
-        })
-        newProduct.thumbnails = paths
-    }
-    socket.emit('newProduct', newProduct)
-    res.send({
-        status: 'success'
-    })
-})
+// router.post('/realtimeproducts', uploader.array('files'), async (req, res)=>{
+//     const newProduct = req.body
+//     const socket = req.app.get('socket')
+//     if(!newProduct){
+//         return res.status(400).send({
+//             error: 'missing product'
+//         })
+//     }
+//     if(req.files){
+//         const paths = req.files.map(file => {
+//             return {path: file.path,
+//             originalName: file.originalname    
+//             }
+//         })
+//         newProduct.thumbnails = paths
+//     }
+//     socket.emit('newProduct', newProduct)
+//     res.send({
+//         status: 'success'
+//     })
+// })
 
 
 // router.get('/', async (req, res) => {
@@ -132,12 +131,12 @@ router.post('/realtimeproducts', uploader.array('files'), async (req, res)=>{
 //     })
 // })
 
-router.get('/chat', async (req,res)=>{
-    const messages = await messageModel.find().lean()
-    res.render('chat', {
-        title: "Super Chat!",
-        messages})
-})
+// router.get('/chat', async (req,res)=>{
+//     const messages = await messageModel.find().lean()
+//     res.render('chat', {
+//         title: "Super Chat!",
+//         messages})
+// })
 
 
 

@@ -7,6 +7,9 @@ const {Server} = require("socket.io")
 require('./config/dbConfig')
 const session = require("express-session")
 const MongoStore = require("connect-mongo")
+const passport = require("passport")
+const cookieParser = require('cookie-parser')
+const initializePassport = require('./middlewares/passport.middleware')
 
 const PORT = process.env.PORT || 8080; 
 const app = express()
@@ -15,8 +18,9 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded( {extended: true}))
 app.use('/statics', express.static(path.resolve(__dirname, './public')))
+app.use(cookieParser())
 app.use(session({
-    name: 'session',
+    name: 'sessions',
     secret:'contraseña123' ,
     cookie: {
         maxAge: 60000 * 60,
@@ -28,7 +32,10 @@ app.use(session({
         mongoUrl: "mongodb+srv://admin:12345@ecommerce.koayiwg.mongodb.net/ecommerce?retryWrites=true&w=majority",
         ttl: 3600
     })
-}))
+}));
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
 
 
 //Routes
