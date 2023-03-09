@@ -1,5 +1,5 @@
-const ProductModel = require ("../models/products.models")
-const cartModel = require("../models/cart.models")
+const ProductModel = require ("../../schemas/products.models")
+const cartModel = require("../../schemas/cart.models")
 
 class productMongoManager{
     async getProducts({limit, page, query, sort}) {

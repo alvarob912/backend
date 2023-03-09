@@ -7,6 +7,8 @@ const {Server} = require("socket.io")
 require('./config/dbConfig')
 const session = require("express-session")
 const MongoStore = require("connect-mongo")
+const flash = require('connect-flash')
+const { logGreen, logCyan, logRed } = require('./utils/console.utils')
 const passport = require("passport")
 const cookieParser = require('cookie-parser')
 const initializePassport = require('./middlewares/passport.middleware')
@@ -19,23 +21,9 @@ app.use(express.json())
 app.use(express.urlencoded( {extended: true}))
 app.use('/statics', express.static(path.resolve(__dirname, './public')))
 app.use(cookieParser())
-app.use(session({
-    name: 'sessions',
-    secret:'contraseña123' ,
-    cookie: {
-        maxAge: 60000 * 60,
-        httpOnly: true
-    },
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-        mongoUrl: "mongodb+srv://admin:12345@ecommerce.koayiwg.mongodb.net/ecommerce?retryWrites=true&w=majority",
-        ttl: 3600
-    })
-}));
 initializePassport();
 app.use(passport.initialize());
-app.use(passport.session());
+app.use(flash());
 
 
 //Routes
@@ -48,23 +36,30 @@ app.set('views', __dirname + '/views')
 app.set('view engine', 'handlebars')
 
 //Server
-const httpServer = app.listen(PORT, () => {
-    console.log("Server up and running in port", PORT)
-})
+const server = app.listen(PORT, "127.0.0.1", () => {
+    const host = server.address().address;
+    const port = server.address().port;
+    logGreen(`Server is up and running on http://${host}:${port}`);
+});
 
-//Socket
+// Server error
+server.on("error", (error) => {
+    logRed("There was an error starting the server");
+    logRed(error);
+    });
 
-const socketServer = new Server(httpServer);
+//Sockets
+const io = new Server(server)
 
-socketServer.on('connection', (socket) =>{
-    console.log("Nuevo cliente conectado")
+io.on('connection', (socket)=>{
+    logCyan("new client connected");
     app.set('socket', socket)
     app.set('io', io)
     socket.on('login', user =>{
         socket.emit('welcome', user)
         socket.broadcast.emit('new-user', user)
     })
-    })
+})
 
 
 
