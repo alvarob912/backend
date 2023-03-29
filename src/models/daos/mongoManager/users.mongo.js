@@ -1,8 +1,13 @@
 const UsersModel = require( "../../schemas/user.model")
 const { logCyan } = require('../../../utils/console.utils')
+const MongoManager = require('../../db/mongo.manager.js')
 
 
 class UserManagerMongo {
+
+    constructor(){
+        MongoManager.connect()
+    }
 
 async getAll(filter = {}) {
     const { limit = 20, page = 1 } = filter;
@@ -21,19 +26,19 @@ async getByEmail(email) {
     return user;
 }
 
-async create(payload) {
+async addUser(payload) {
     const newUser = await UsersModel.create(payload);
     logCyan('New user created')
     return newUser;
 }
 
-async updateById(id, payload) {
+async updateUser(id, payload) {
     const updatedUser = await UsersModel.findByIdAndUpdate(id, payload, { new: true });
     logCyan('User updated')
     return updatedUser;
 }
 
-async deleteById(id) {
+async deleteUser(id) {
     const deletedUser = await UsersModel.findByIdAndDelete(id);
     return deletedUser;
 }

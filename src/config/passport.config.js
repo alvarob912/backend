@@ -1,11 +1,11 @@
 const passport = require("passport");
 const userModel = require("../models/schemas/user.model");
-const CartManagerMongo = require('../models/daos/mongoManager/cartManagerMongo')
+const CartManagerMongo = require('../models/daos/mongoManager/cart.manager')
 const UserManagerMongo = require('../models/daos/mongoManager/users.mongo')
 const { logRed } = require('../utils/console.utils')
 const { cookieExtractor } = require('../utils/session.utils')
 const { SECRET_KEY } = require('../constants/session.constants')
-const { createHash, isValidPassword } = require("../utils/utils");
+const { createHash, isValidPassword } = require("../utils/bcrypt.utils.js");
 const local = require("passport-local");
 const github = require("passport-github2");
 const jwt = require('passport-jwt')
@@ -21,60 +21,70 @@ const ExtractJWT = jwt.ExtractJwt
 
 const initializePassport = () =>{
     //Local Register
-    passport.use('register', new LocalStrategy(
-        {
-            passReqToCallback: true,
-            usernameField: 'email'
-        },
-        async (req, username, password, done)=>{
-            const { firstName, lastName, email, age } = req.body
-            if(!firstName || !lastName || !age || !email || !password){
-                logRed('missing fields');
-                return done(null, false)
-            }
-            try {
-                const user = await usersDao.getByEmail(username)
-                const cart = await cartsDao.addCart()
-                if(user){
-                    const message = 'User already exist'
-                    logRed(message);
-                    return done(null, false, {message})
-                }
-                const newUser = {
-                    firstName,
-                    lastName, 
-                    email,
-                    age,
-                    password: createHash(password),
-                    cart: cart._id
-                }
-                let result = await usersDao.addUser(newUser)
-                return done(null, result)
-            } catch (error) {
-                return done('Error getting user: ' + error)
-            }
-        }
+    // passport.use('register', new LocalStrategy(
+    //     {
+    //         passReqToCallback: true,
+    //         usernameField: 'email'
+    //     },
+    //     async (req, username, password, done)=>{
+    //         const { firstName, lastName, email, age } = req.body
+    //         if(!firstName || !lastName || !age || !email || !password){
+    //             logRed('missing fields');
+    //             return done(null, false)
+    //         }
+    //         try {
+    //             const user = await usersDao.getByEmail(username)
+    //             const cart = await cartsDao.addCart()
+    //             if(user){
+    //                 const message = 'User already exist'
+    //                 logRed(message);
+    //                 return done(null, false, {message})
+    //             }
+    //             const newUser = {
+    //                 firstName,
+    //                 lastName, 
+    //                 email,
+    //                 age,
+    //                 password: createHash(password),
+    //                 cart: cart._id
+    //             }
+    //             let result = await usersDao.addUser(newUser)
+    //             return done(null, result)
+    //         } catch (error) {
+    //             return done('Error getting user: ' + error)
+    //         }
+    //     }
 
-    )),
+    // )),
 
-    //Local Login
-    passport.use('login', new LocalStrategy(
-        {usernameField: 'email'},
-        async(username, password, done) =>{
-            try {
-                const user = await usersDao.getByEmail(username)
-                if(!user){
-                    return done(null, false, 'user not found')
-                }
-                if(!isValidPassword(user, password)){
-                    return done(null, false, 'wrong user or password')
-                }
-                return done(null, user)
-            } catch (error) {
-                return done(error)
-            }
-        }
-    ))
+    // //Local Login
+    // passport.use('login', new LocalStrategy(
+    //     {usernameField: 'email'},
+    //     async(username, password, done) =>{
+    //         try {
+    //             if(username === adminName && password === adminPassword){
+    //                 const user = {
+    //                     firstName: 'Admin',
+    //                     lastName: 'Coder',
+    //                     email: adminName,
+    //                     password: adminPassword,
+    //                     role: 'admin'
+    //                 }
+    //                 return done(null, user)
+    //             }
+    //             const user = await usersDao.getByEmail(username)
+    //             if(!user){
+    //                 return done(null, false, 'user not found')
+    //             }
+    //             if(!isValidPassword(user, password)){
+    //                 return done(null, false, 'wrong user or password')
+    //             }
+    //             return done(null, user)
+    //         } catch (error) {
+    //             return done(error)
+    //         }
+    //     }
+    // ))
 
     //Github Strategy
     passport.use(

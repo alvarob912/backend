@@ -32,11 +32,11 @@ const userSchema = new mongoose.Schema({
     cart: {
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'carts',
-        required: true
+        required: true,
+        default:[]
     }
 })
 
-userSchema.plugin(mongoosePaginate);
 const userModel = mongoose.model(userCollection, userSchema)
 
 module.exports = userModel

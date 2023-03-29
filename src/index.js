@@ -1,39 +1,41 @@
-const express = require("express")
-const apiRoutes = require("./routes/app.routers")
-const handlebars = require("express-handlebars")
+const express = require('express')
+const apiRouter = require('./routes/app.routers.js')
 const path = require('path')
-const viewsRoutes = require('./routes/views/views.router')
-const {Server} = require("socket.io")
-require('./config/dbConfig')
-const session = require("express-session")
-const MongoStore = require("connect-mongo")
-const flash = require('connect-flash')
+const handlebars = require('express-handlebars')
+const helpers = require('handlebars-helpers')
+const viewsRoutes = require('./routes/views/views.router.js')
+const { Server } = require('socket.io')
+const passport = require('passport')
+const initializePassport = require('./config/passport.config')
 const { logGreen, logCyan, logRed } = require('./utils/console.utils')
-const passport = require("passport")
+const flash = require('connect-flash')
 const cookieParser = require('cookie-parser')
-const initializePassport = require('./middlewares/passport.middleware')
+const { PORT } = require('./config/enviroment.config')
 
-const PORT = process.env.PORT || 8080; 
 const app = express()
 
 //Middlewares
 app.use(express.json())
-app.use(express.urlencoded( {extended: true}))
-app.use('/statics', express.static(path.resolve(__dirname, './public')))
+app.use(express.urlencoded({ extended:true }))
+app.use('/statics', express.static(path.resolve(__dirname, '../public')))
 app.use(cookieParser())
-initializePassport();
-app.use(passport.initialize());
-app.use(flash());
+initializePassport()
+app.use(passport.initialize())
+app.use(flash())
 
-
-//Routes
-app.use("/api", apiRoutes)
+//Router
+app.use('/api', apiRouter)
 app.use('/', viewsRoutes)
 
 //Templates
-app.engine('handlebars', handlebars.engine())
-app.set('views', __dirname + '/views')
-app.set('view engine', 'handlebars')
+const math = helpers.math();
+app.engine('handlebars', handlebars.engine({
+    helpers: {
+        math
+    }
+}))
+app.set('views', path.resolve(__dirname, './views'));
+app.set('view engine', 'handlebars');
 
 //Server
 const server = app.listen(PORT, "127.0.0.1", () => {
@@ -46,7 +48,7 @@ const server = app.listen(PORT, "127.0.0.1", () => {
 server.on("error", (error) => {
     logRed("There was an error starting the server");
     logRed(error);
-    });
+  });
 
 //Sockets
 const io = new Server(server)

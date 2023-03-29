@@ -48,7 +48,7 @@ class UsersController{
         try {
             const updatedUser = await usersDao.updateUser(uid, userData)
             if (!updatedUser) {
-                throw new HttpError(404, 'User not found');
+                throw new HttpError(HTTP_STATUS.NOT_FOUND, 'User not found');
             }
             const response = apiSuccessResponse(updatedUser)
             return res.status(HTTP_STATUS.OK).json(response)

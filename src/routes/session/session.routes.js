@@ -1,12 +1,13 @@
 const { Router } = require('express')
-const { roleMiddleware } = require('../../middlewares/role.middleware')
+const uploader = require('../../utils/multer.utils')
 const SessionsController = require('../../controllers/sessions.controller')
 const passportCall = require('../../middlewares/passport.middleware')
 
 const router = Router()
 
 router.post('/register',
-    passportCall('register', {failureRedirect: '/api/session/failRegister', failureFlash: true}),
+    passportCall('jwt'),
+    SessionsController.register,
     (req, res)=>res.redirect('/login')
 )
 
@@ -15,7 +16,7 @@ router.get('/failRegister', (req,res)=>{
 })
 
 router.post('/login', 
-    passportCall('login', {failureRedirect: '/api/session/failLogin'}),
+    passportCall('jwt'),
     SessionsController.login
 )
 

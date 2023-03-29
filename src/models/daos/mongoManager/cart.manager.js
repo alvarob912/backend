@@ -1,10 +1,15 @@
-const cartModel = require('../../schemas/cart.model')
-const productModel = require('../../schemas/products.model')
+const cartModel = require('../../schemas/cart.models.js')
+const productModel = require('../../schemas/products.models.js')
 const { logGreen, logCyan } = require('../../../utils/console.utils')
 const { HttpError } = require('../../../utils/error.utils')
 const HTTP_STATUS = require('../../../constants/api.constants')
+const MongoManager = require('../../db/mongo.manager.js')
 
 class CartManagerMongo {
+
+    constructor(){
+        MongoManager.connect()
+    }
 
     async getCarts() {
         const carts = await cartModel.find()

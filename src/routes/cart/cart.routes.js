@@ -1,45 +1,15 @@
-const { Router } = require("express");
-const ProductManager = require("../../daos/fileManager/manager");
-const router = Router();
-const manager = new ProductManager("./src/data/cart.json");
+const { Router } = require('express')
+const CartsController = require('../../controllers/carts.controller')
 
+const router = Router()
 
+router.get('/', CartsController.getAll)
+router.get('/:cid', CartsController.getById)
+router.post('/', CartsController.addCart)
+router.post('/:cid/product/:pid', CartsController.addProduct)
+router.put('/:cid', CartsController.updateProducts)
+router.put('/:cid/product/:pid', CartsController.updateQuantity)
+router.delete('/:cid/product/:pid', CartsController.removeProducts)
+router.delete('/:cid', CartsController.clearCart)
 
-router.get("/:cid", async (req, res) => {
-    const cid = Number(req.params.cid);
-    
-    if (isNaN(cid)) {
-        res.status(400).send("el parametro debe ser un numero");
-    } else {
-        res.json({
-        status: "success",
-        data: await manager.getProductById(cid),
-        });
-    }
-});
-
-
-router.post("/", async (req, res) => {
-    res.json({
-        status: "success",
-        data: await manager.createCart(),
-    });
-});
-
-router.post("/:cid/product/:pid", async (req, res) => {
-    const cid = Number(req.params.cid);
-    const pid = Number(req.params.pid);
-    const data = await manager.addToCart(cid, pid)
-    console.log(data)
-    
-    if (isNaN(cid) || isNaN(pid)) {
-        res.status(400).send("ambos parametros deben ser numeros");
-    } else {
-        res.json({
-        status: "success",
-        data: data
-    });
-    }
-});
-
-module.exports = router;
+module.exports = router
