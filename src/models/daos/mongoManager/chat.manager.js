@@ -1,12 +1,7 @@
 const messageModel = require('../../schemas/message.models.js')
 const { logYellow } = require('../../../utils/console.utils')
-const MongoManager = require('../../db/mongo.manager.js')
 
 class ChatMongoDao {
-
-    constructor(){
-        MongoManager.connect()
-    }
     
     async getAll() {
         const messages = await messageModel.find().lean()
@@ -29,7 +24,6 @@ class ChatMongoDao {
         logYellow(`chat cleaned`)
         return cleanChat  
     }
-
 }
 
 module.exports = ChatMongoDao

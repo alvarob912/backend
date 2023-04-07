@@ -1,17 +1,16 @@
-const passport = require("passport");
-const userModel = require("../models/schemas/user.model");
-const CartManagerMongo = require('../models/daos/mongoManager/cart.manager')
-const UserManagerMongo = require('../models/daos/mongoManager/users.mongo')
+const passport = require('passport')
+const local = require('passport-local')
+const github = require('passport-github2')
+const jwt = require('passport-jwt')
+const { createHash, isValidPassword } = require('../utils/bcrypt.utils')
+const getDaos = require('../models/daos/factory')
 const { logRed } = require('../utils/console.utils')
 const { cookieExtractor } = require('../utils/session.utils')
-const { SECRET_KEY } = require('../constants/session.constants')
-const { createHash, isValidPassword } = require("../utils/bcrypt.utils.js");
-const local = require("passport-local");
-const github = require("passport-github2");
-const jwt = require('passport-jwt')
+const { SECRET_KEY } = require("../config/enviroment.config.js")
+const { ADMIN_NAME, ADMIN_PASSWORD } = require('./enviroment.config')
+const { AddUserDTO, GetUserDTO } = require('../models/dtos/users.dto.js')
 
-const usersDao = new UserManagerMongo()
-const cartsDao = new CartManagerMongo()
+const { cartsDao, usersDao } = getDaos()
 
 const LocalStrategy = local.Strategy
 const GithubStrategy = github.Strategy
@@ -21,70 +20,79 @@ const ExtractJWT = jwt.ExtractJwt
 
 const initializePassport = () =>{
     //Local Register
-    // passport.use('register', new LocalStrategy(
-    //     {
-    //         passReqToCallback: true,
-    //         usernameField: 'email'
-    //     },
-    //     async (req, username, password, done)=>{
-    //         const { firstName, lastName, email, age } = req.body
-    //         if(!firstName || !lastName || !age || !email || !password){
-    //             logRed('missing fields');
-    //             return done(null, false)
-    //         }
-    //         try {
-    //             const user = await usersDao.getByEmail(username)
-    //             const cart = await cartsDao.addCart()
-    //             if(user){
-    //                 const message = 'User already exist'
-    //                 logRed(message);
-    //                 return done(null, false, {message})
-    //             }
-    //             const newUser = {
-    //                 firstName,
-    //                 lastName, 
-    //                 email,
-    //                 age,
-    //                 password: createHash(password),
-    //                 cart: cart._id
-    //             }
-    //             let result = await usersDao.addUser(newUser)
-    //             return done(null, result)
-    //         } catch (error) {
-    //             return done('Error getting user: ' + error)
-    //         }
-    //     }
+    passport.use('register', new LocalStrategy(
+        {
+            passReqToCallback: true,
+            usernameField: 'email'
+        },
+        async (req, username, password, done)=>{
+            const { firstName, lastName, email, age } = req.body
+            if(!firstName || !lastName || !age || !email || !password){
+                logRed('missing fields');
+                return done(null, false)
+            }
+            try {
+                const user = await usersDao.getByEmail(username)
+                const cart = await cartsDao.add()
+                if(user){
+                    const message = 'User already exist'
+                    logRed(message);
+                    return done(null, false, {message})
+                }
+                const newUser = {
+                    firstName,
+                    lastName, 
+                    email,
+                    age,
+                    password: createHash(password),
+                    cart: cart._id,
+                }
+                if(req.file){
+                    const paths = {
+                        path: req.file.path,
+                        originalName: req.file.originalname  
+                        }  
+                    newUser.profilePic = paths
+                } 
+                const userPayload = new AddUserDTO(newUser)
+                let result = await usersDao.addUser(userPayload)
+                return done(null, result)
+            } catch (error) {
+                return done('Error getting user: ' + error)
+            }
+        }
 
-    // )),
+    )),
 
-    // //Local Login
-    // passport.use('login', new LocalStrategy(
-    //     {usernameField: 'email'},
-    //     async(username, password, done) =>{
-    //         try {
-    //             if(username === adminName && password === adminPassword){
-    //                 const user = {
-    //                     firstName: 'Admin',
-    //                     lastName: 'Coder',
-    //                     email: adminName,
-    //                     password: adminPassword,
-    //                     role: 'admin'
-    //                 }
-    //                 return done(null, user)
-    //             }
-    //             const user = await usersDao.getByEmail(username)
-    //             if(!user){
-    //                 return done(null, false, 'user not found')
-    //             }
-    //             if(!isValidPassword(user, password)){
-    //                 return done(null, false, 'wrong user or password')
-    //             }
-    //             return done(null, user)
-    //         } catch (error) {
-    //             return done(error)
-    //         }
-    //     }
-    // ))
+    //Local Login
+    passport.use('login', new LocalStrategy(
+        {usernameField: 'email'},
+        async(username, password, done) =>{
+            try {
+                if(username === ADMIN_NAME && password === ADMIN_PASSWORD){
+                    const user = {
+                        first_name: 'Admin',
+                        last_name: 'Coder',
+                        email: ADMIN_NAME,
+                        password: ADMIN_PASSWORD,
+                        role: 'admin',
+                        cart: '640e0351f496d9111957b2de'
+                    }
+                    return done(null, user)
+                }
+                const user = await usersDao.getByEmail(username)
+                if(!user){
+                    return done(null, false, 'user not found')
+                }
+                if(!isValidPassword(user, password)){
+                    return done(null, false, 'wrong user or password')
+                }
+                return done(null, user)
+            } catch (error) {
+                return done(error)
+            }
+        }
+    ))
 
     //Github Strategy
     passport.use(
@@ -98,7 +106,7 @@ const initializePassport = () =>{
             try {
                 const user = await usersDao.getByEmail(userData.email)
                 if(!user){
-                    const cart = await cartsDao.addCart()
+                    const cart = await cartsDao.add()
                     const newUser = {
                         firstName: userData.name.split(' ')[0],
                         lastName: userData.name.split(' ')[1],
@@ -108,7 +116,8 @@ const initializePassport = () =>{
                         githubLogin: userData.login,
                         cart: cart._id
                     }
-                    const response = await usersDao.addUser(newUser)
+                    const userPayload = new AddUserDTO(newUser)
+                    const response = await usersDao.addUser(userPayload)
                     const finalUser = response._doc
                     done(null, finalUser)
                     return
@@ -127,7 +136,8 @@ const initializePassport = () =>{
         secretOrKey: SECRET_KEY
     }, async (jwt_payload, done) =>{
         try {
-            return done(null, jwt_payload)
+            const userPayload = new GetUserDTO(jwt_payload)
+            return done(null, userPayload)
         } catch (error) {
             return done(error)
         }

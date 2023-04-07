@@ -4,10 +4,10 @@ const mongoosePaginate = require('mongoose-paginate-v2')
 const userCollection = 'users'
 
 const userSchema = new mongoose.Schema({
-    firstName: { 
+    first_name: { 
         type: String
     },
-    lastName: { 
+    last_name: { 
         type: String
     },
     email: { 
@@ -34,6 +34,9 @@ const userSchema = new mongoose.Schema({
         ref: 'carts',
         required: true,
         default:[]
+    },
+    profile_pic:{
+        type: Object
     }
 })
 

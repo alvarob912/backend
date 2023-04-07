@@ -6,8 +6,8 @@ const passportCall = require('../../middlewares/passport.middleware')
 const router = Router()
 
 router.post('/register',
-    passportCall('jwt'),
-    SessionsController.register,
+    uploader.single('file'),
+    passportCall('register', {failureRedirect: '/api/session/failRegister', failureFlash: true}),
     (req, res)=>res.redirect('/login')
 )
 
@@ -16,7 +16,7 @@ router.get('/failRegister', (req,res)=>{
 })
 
 router.post('/login', 
-    passportCall('jwt'),
+    passportCall('login', {failureRedirect: '/api/session/failLogin'}),
     SessionsController.login
 )
 
@@ -37,6 +37,7 @@ router.get('/logout', SessionsController.logout)
 
 router.get('/current', 
     passportCall('jwt'),
-    SessionsController.currentSession)
+    SessionsController.currentSession
+)
 
 module.exports = router
