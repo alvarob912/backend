@@ -51,12 +51,6 @@ class CartsService {
             addedProduct = await cartsDao.addProductToCart(cid, pid, amount)
         }
         return addedProduct
-        //IMPLEMENTAR ESTO CUANDO SE CONFIRMA LA COMPRA
-        // const updatedProduct = {
-        //     ...product._doc,
-        //     stock: product.stock - amount
-        // }
-        // await productsDao.updateById(pid, updatedProduct)
     }
 
     async deleteProduct(cid, pid) {

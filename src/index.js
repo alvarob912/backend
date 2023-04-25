@@ -11,6 +11,8 @@ const { logGreen, logCyan, logRed } = require('./utils/console.utils')
 const flash = require('connect-flash')
 const cookieParser = require('cookie-parser')
 const { PORT } = require('./config/enviroment.config')
+const addLogger = require('./middlewares/logger.middleware.js')
+
 
 const app = express()
 
@@ -22,6 +24,7 @@ app.use(cookieParser())
 initializePassport()
 app.use(passport.initialize())
 app.use(flash())
+app.use(addLogger)
 
 //Router
 app.use('/api', apiRouter)
