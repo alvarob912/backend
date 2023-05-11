@@ -50,6 +50,46 @@ class UsersService {
         return updatedUser
     }
 
+    async updatePassword(email, newPassword){
+        if(!email || !newPassword){
+            throw new HttpError('Email and password are required', HTTP_STATUS.BAD_REQUEST)
+        }
+        const user = await usersDao.getByEmail(email)
+        if(!user){
+            throw new HttpError('User not found', HTTP_STATUS.NOT_FOUND)
+        }
+        if(isValidPassword(user, newPassword)){
+            throw new HttpError('The new password can not be the same that the previous one', HTTP_STATUS.BAD_REQUEST)
+        }
+        const newHashedPassword = createHash(newPassword)
+        console.log(newHashedPassword);
+        const newUser = {
+            password: newHashedPassword
+        }
+        const updatedUser = await usersDao.updateUser(user._id, newUser)
+        return updatedUser
+    }
+
+    async updateUserRole(uid){
+        if(!uid){
+            throw new HttpError('Must provide an id', HTTP_STATUS.BAD_REQUEST)
+        }
+        const user = await usersDao.getById(uid)
+        if(!user){
+            throw new HttpError('User not found', HTTP_STATUS.NOT_FOUND)
+        }
+        let newRole = {}
+        if(user.role === 'user'){
+            newRole.role = 'premium'
+        }
+        if(user.role === 'premium'){
+            newRole.role = 'user'
+        }
+        const updatedUser = await usersDao.updateUser(user._id, newRole)
+        return updatedUser
+
+    }
+
     async deleteUser(uid){
         if(!uid){
             throw new HttpError('Must provide an id', HTTP_STATUS.BAD_REQUEST)

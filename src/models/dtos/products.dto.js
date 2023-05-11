@@ -9,6 +9,7 @@ class GetProductDTO{
         this.category = payload.category
         this.status = payload.status
         this.thumbnails = payload.thumbnails
+        this.owner = payload.owner
     }
 }
 
@@ -21,6 +22,7 @@ class AddProductDTO {
         this.price = payload.price
         this.stock = payload.stock
         this.category = payload.category
+        this.owner = owner
         this.status = payload.stock > 0 ? true : false
         if(files){
             const paths = files.map(file => {

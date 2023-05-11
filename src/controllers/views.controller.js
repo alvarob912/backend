@@ -76,6 +76,19 @@ class ViewsController{
             next(error)
         }
     }
+
+    static async passwordForm(req, res, next){
+        const { token } = req.query
+        try {
+            res.render('newPasswordForm', {
+                title: "Generate new password",
+                token
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
 }
+
 
 module.exports = ViewsController

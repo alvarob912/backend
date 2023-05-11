@@ -50,9 +50,16 @@ class ProductsService {
         return updatedProduct
     }
 
-    async deleteProduct(pid){
+    async deleteProduct(pid, user){
         if(!pid){
             throw HttpError('Please specify a product ID', HTTP_STATUS.BAD_REQUEST)
+        }
+        const product = await productsDao.getById(pid)
+        if(!product){
+            throw new HttpError('Product not found', HTTP_STATUS.NOT_FOUND)
+        }
+        if(user.role === 'premium' && user.email !== product.owner){
+            throw new HttpError("Only product's owner can delete this resource", HTTP_STATUS.FORBIDDEN)
         }
         const deletedProduct = await productsDao.delete(pid)
         return deletedProduct

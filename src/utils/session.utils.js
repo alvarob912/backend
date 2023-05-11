@@ -14,7 +14,13 @@ const cookieExtractor = (req) => {
     return token;
 };
 
+const generateRecoveringToken = (email) => {
+    const token = jwt.sign({email}, SECRET_KEY, { expiresIn: '1h' });
+    return token;
+};
+
 module.exports = {
     generateToken,
-    cookieExtractor
+    cookieExtractor,
+    generateRecoveringToken
 }

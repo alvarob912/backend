@@ -4,11 +4,13 @@ class GetTicketDTO {
         this.date = payload.purchase_datetime
         this.amount = payload.amount
         this.purchaser = payload.purchaser
+        this.products = payload.products
     }
 }
 
 class AddTicketDTO {
     constructor(purchaser, amount){
+        this.products = products
         this.purchaser = purchaser.email
         this.amount = amount
         this.purchase_datetime = new Date()
