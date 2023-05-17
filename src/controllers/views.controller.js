@@ -23,6 +23,12 @@ class ViewsController{
         })
     }
 
+    static async recover(req, res, next) {
+        res.render('recover', {
+            title: 'Recover your password',
+        })
+    }
+
     static async products(req, res, next) {
         const { user } = req
         const filter = req.query
