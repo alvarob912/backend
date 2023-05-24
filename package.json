@@ -37,6 +37,9 @@
     "winston": "^3.8.2"
   },
   "devDependencies": {
-    "@faker-js/faker": "^8.0.1"
+    "@faker-js/faker": "^8.0.1",
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "supertest": "^6.3.3"
   }
 }
