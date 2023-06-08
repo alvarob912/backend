@@ -11,5 +11,7 @@ router.put('/generatenewpassword', UsersController.updatePassword)
 router.put('/premium/:uid', UsersController.changeRole)
 router.put('/:uid', UsersController.updateUser)
 router.delete('/:uid', UsersController.deleteUser)
+router.delete('/', passportCall('jwt'), roleMiddleware(['admin']), UsersController.deleteInactiveUsers)
+
 
 module.exports = router

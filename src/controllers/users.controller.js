@@ -122,6 +122,33 @@ class UsersController{
             next(error)
         }
     }    
+
+    static async addDocuments(req, res, next) {
+        const { uid } = req.params
+        const { file } = req
+        const { doctype } = req.headers
+        try {
+            const newUser = await usersService.addDocuments(uid, file, doctype)
+            req.logger.info('New document added')
+            const response = apiSuccessResponse(newUser)
+            return res.status(HTTP_STATUS.OK).json(response)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    static async deleteInactiveUsers(req, res, next){
+        try {
+            const deletedUsers = await usersService.deleteInactive()
+            req.logger.info('Inactive users deleted')
+            const response = apiSuccessResponse(deletedUsers)
+            return res.status(HTTP_STATUS.OK).json(response)
+        } catch (error) {
+            next(error)
+        }
+    }
 }
+
+
 
 module.exports = UsersController

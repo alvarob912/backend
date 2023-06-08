@@ -21,6 +21,17 @@ class UsersService {
         return user
     }
 
+    async getByEmail(email){
+        if(!email){
+            throw new HttpError('Must provide an email', HTTP_STATUS.BAD_REQUEST)
+        }
+        const user = await usersDao.getByEmail(email)
+        if(!user){
+            throw new HttpError('User not found', HTTP_STATUS.NOT_FOUND)
+        }
+        return user
+    }
+
     async createUser(payload, file){
         if(!Object.keys(payload).length){
             throw new HttpError('Missing data for user', HTTP_STATUS.BAD_REQUEST)
@@ -100,6 +111,47 @@ class UsersService {
         }
         const deletedUser = await usersDao.deleteUser(uid)
         return deletedUser
+    }
+
+    async deleteInactive(){
+        const users = await usersDao.getAll()
+        const date = new Date()
+        const twoDaysMs = 2 * 24 * 60 * 60 * 1000;
+        const inactiveUsers = users.filter(user => {
+            if(user.last_connection){
+                return (date.getTime() - user.last_connection.getTime()) > twoDaysMs
+            }else{
+                return user
+            }
+        })
+        inactiveUsers.forEach(iUser => usersDao.deleteUser(iUser._id))
+    }
+
+    async addDocuments(uid, file, doctype){
+        if(!file || !doctype){
+            throw new HttpError('Missing document', HTTP_STATUS.BAD_REQUEST)
+        }
+        const paths = {
+            name: file.originalname,
+            reference: file.path,
+            doctype
+        }  
+        const user = await usersDao.getById(uid)
+        const userPayload = {
+            documents: [
+                ...user.documents,
+                paths
+            ]
+        }
+        const allDocTypes = ['id', 'address', 'account_status'];
+        const allDocuments = allDocTypes.every(type => {
+            return userPayload.documents.some(document => document.doctype === type);
+        });
+        if(allDocuments){
+            userPayload.status = true
+        };
+        const updatedUser = await usersDao.updateUser(uid, userPayload)
+        return updatedUser
     }
 }
 

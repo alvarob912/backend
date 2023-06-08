@@ -72,6 +72,19 @@ io.on('connection', (socket)=>{
     })
 })
 
+// Swagger documentation
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.1',
+        info: {
+            title: 'E-commerce Documentation',
+            description: "Coderhouse's Backend course"
+        }
+    },
+    apis: [`${__dirname}/docs/*/*.yaml`]
+}
+const specs = swaggerJSDoc(swaggerOptions)
+app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
 
 
 

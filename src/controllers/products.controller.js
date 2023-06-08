@@ -31,8 +31,9 @@ class ProductsController{
     static async addProduct(req, res, next) {
         const productPayload = req.body
         const { files } = req
+        const owner = req.user.email
         try {
-            const addProduct = await productsService.createProduct(productPayload, files)
+            const addProduct = await productsService.createProduct(productPayload, files, owner)
             const response = apiSuccessResponse(addProduct)
             return res.status(HTTP_STATUS.CREATED).json(response)
         } catch (error) {
@@ -53,9 +54,10 @@ class ProductsController{
     }
 
     static async deleteProduct(req, res, next){
+        const { user } = req
         const { pid } = req.params
         try {
-            const deleteProduct = await productsService.deleteProduct(pid)
+            const deleteProduct = await productsService.deleteProduct(pid, user)
             const response = apiSuccessResponse(deleteProduct)
             return res.status(HTTP_STATUS.OK).json(response)
         } catch (error) {
