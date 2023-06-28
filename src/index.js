@@ -47,7 +47,7 @@ app.set('views', path.resolve(__dirname, './views'));
 app.set('view engine', 'handlebars');
 
 //Server
-const server = app.listen(PORT, "127.0.0.1", () => {
+const server = app.listen(PORT || 8080 , "127.0.0.1", () => {
     const host = server.address().address;
     const port = server.address().port;
     logGreen(`Server is up and running on http://${host}:${port}`);
