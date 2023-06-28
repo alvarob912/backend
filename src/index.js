@@ -12,7 +12,7 @@ const initializePassport = require('./config/passport.config')
 const { logGreen, logCyan, logRed } = require('./utils/console.utils')
 const flash = require('connect-flash')
 const cookieParser = require('cookie-parser')
-const { PORT } = require('./config/enviroment.config')
+//const { PORT } = require('./config/enviroment.config')
 const addLogger = require('./middlewares/logger.middleware.js')
 const swaggerJSDoc = require('swagger-jsdoc')
 const swaggerUiExpress = require('swagger-ui-express')
@@ -47,7 +47,8 @@ app.set('views', path.resolve(__dirname, './views'));
 app.set('view engine', 'handlebars');
 
 //Server
-const server = app.listen(PORT || 8080 , "127.0.0.1", () => {
+const PORT = process.env.PORT || 8080;
+const server = app.listen(PORT , "127.0.0.1", () => {
     const host = server.address().address;
     const port = server.address().port;
     logGreen(`Server is up and running on http://${host}:${port}`);
@@ -59,18 +60,6 @@ server.on("error", (error) => {
     logRed(error);
   });
 
-//Sockets
-const io = new Server(server)
-
-io.on('connection', (socket)=>{
-    logCyan("new client connected");
-    app.set('socket', socket)
-    app.set('io', io)
-    socket.on('login', user =>{
-        socket.emit('welcome', user)
-        socket.broadcast.emit('new-user', user)
-    })
-})
 
 // Swagger documentation
 const swaggerOptions = {
