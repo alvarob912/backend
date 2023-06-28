@@ -1,0 +1,18 @@
+<div class="container-fluid">
+    <h3 class="text-center">Todos los productos</h3>
+    <div class="container-fluid">
+    {{#each products}}
+    <div class="card" style="width: 12rem;">
+            <img src="..." class="card-img-top" alt="...">
+            <div class="card-body">
+        <h5 class="product-title">{{this.title}}</h5>
+        <p class="card-text">{{this.description}}</p>
+        <p class="price-tag">${{this.price}}</p>
+        <a class="btn btn-primary" id={{this.id}} onclick="seeProduct(event, `{{id}}`)">Comprar</a>
+    </div>
+    {{/each}}
+    </div>
+</div>
+
+
+<script src="/statics/js/index.js"></script>

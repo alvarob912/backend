@@ -41,10 +41,12 @@ class CartsController{
     }
 
     static async addProduct(req, res, next){
+        const { cid, pid } = req.params
+        const { user } = req
         try {
-            const { cid, pid } = req.params
             const amount = +req.body?.amount || 1
-            const addedProduct = await cartsService.addProductToCart(cid, pid, amount)
+            const addedProduct = await cartsService.addProductToCart(cid, pid, amount, user)
+            req.logger.info(`product ${pid} added to cart ${cid}`)
             const response = apiSuccessResponse(addedProduct)
             res.status(HTTP_STATUS.OK).json(response)
         } catch (error) {
@@ -78,10 +80,35 @@ class CartsController{
         const purchaser = req.user
         const { cid } = req.params
         try {
-            const cart = await cartsService.getCartById(cid)
-            const payload = cart.products
-            const ticket = await ticketService.createTicket(cid, payload, purchaser)
+            const ticket = await ticketService.createTicket(cid, purchaser)
+            req.logger.info(`Successful purchase`)
             const response = apiSuccessResponse(ticket)
+            res.status(HTTP_STATUS.OK).json(response)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    static async updateCart(req, res, next){
+        const { cid } = req.params
+        const payload = req.body
+        try {
+            const updatedCart = await cartsService.updateCart(cid, payload)
+            const response = apiSuccessResponse(updatedCart)
+            req.logger.info(`cart ${cid} updated`)
+            res.status(HTTP_STATUS.OK).json(response)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    static async updateProductAmount(req, res, next){
+        const { cid, pid } = req.params
+        const { amount } = req.body
+        try {
+            const updatedCart = await cartsService.updateProductAmount(cid, pid, amount)
+            const response = apiSuccessResponse(updatedCart)
+            req.logger.info(`cart ${cid} updated`)
             res.status(HTTP_STATUS.OK).json(response)
         } catch (error) {
             next(error)

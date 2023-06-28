@@ -1,6 +1,6 @@
 const { faker } = require('@faker-js/faker')
 
-faker.locale = 'en'
+
 
 const generateProduct = () => {
     const thumbnails = []

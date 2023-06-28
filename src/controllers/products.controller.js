@@ -31,9 +31,8 @@ class ProductsController{
     static async addProduct(req, res, next) {
         const productPayload = req.body
         const { files } = req
-        const owner = req.user.email
         try {
-            const addProduct = await productsService.createProduct(productPayload, files, owner)
+            const addProduct = await productsService.createProduct(productPayload, files)
             const response = apiSuccessResponse(addProduct)
             return res.status(HTTP_STATUS.CREATED).json(response)
         } catch (error) {
@@ -45,7 +44,7 @@ class ProductsController{
         const { pid } = req.params
         const productPayload = req.body
         try {
-            const updatedProduct = productsService.updateProduct(pid, productPayload)
+            const updatedProduct = await productsService.updateProduct(pid, productPayload)
             const response = apiSuccessResponse(updatedProduct)
             return res.status(HTTP_STATUS.OK).json(response)
         } catch (error) {

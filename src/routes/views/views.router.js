@@ -3,6 +3,8 @@ const ViewsController = require('../../controllers/views.controller')
 const { sessionMiddleware } = require('../../middlewares/session.middleware')
 const { authMiddleware } = require('../../middlewares/auth.middleware')
 const passportCall = require('../../middlewares/passport.middleware')
+const { roleMiddleware } = require('../../middlewares/role.middleware')
+
 
 const router = Router()
 
@@ -30,10 +32,36 @@ router.get('/products',
     ViewsController.products
 )
 
+router.get('/product/:pid',
+    authMiddleware,
+    passportCall('jwt'),
+    ViewsController.productDetail
+)
+
+
 router.get('/cart/:cid', 
     authMiddleware,
     passportCall('jwt'),
     ViewsController.cart
+)
+
+router.get('/users',
+    passportCall('jwt'), 
+    roleMiddleware(['admin']),
+    ViewsController.users
+)
+
+router.get('/profile/:uid',
+    passportCall('jwt'), 
+    roleMiddleware(['user', 'premium']),
+    ViewsController.profile
+)
+
+router.get('/newproduct', 
+    authMiddleware,
+    passportCall('jwt'),
+    roleMiddleware(['admin', 'premium']),
+    ViewsController.newProduct
 )
 
 router.get('/chat', 
@@ -51,5 +79,7 @@ router.get('/ticket/:tid',
 router.get('/newpasswordform',
     ViewsController.passwordForm
 )
+
+
 
 module.exports = router

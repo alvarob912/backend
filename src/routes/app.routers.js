@@ -5,6 +5,7 @@ const chatRoutes = require('./chat/chat.routes')
 const sessionRoutes = require('./session/session.routes')
 const userRoutes = require('./users/users.routes')
 const mailRoutes = require('./mail/mail.routes.js')
+const mockRoutes = require('./mock/mock.routes.js')
 const errorMiddleware = require('../middlewares/error.middleware')
 
 const router = Router()

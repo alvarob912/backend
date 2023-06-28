@@ -23,7 +23,7 @@ const app = express()
 //Middlewares
 app.use(express.json())
 app.use(express.urlencoded({ extended:true }))
-app.use('/statics', express.static(path.resolve(__dirname, './public')))
+app.use('/statics', express.static(path.resolve(__dirname, '../public')))
 app.use(cookieParser())
 initializePassport()
 app.use(passport.initialize())
