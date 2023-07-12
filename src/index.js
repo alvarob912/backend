@@ -48,11 +48,8 @@ app.set('view engine', 'handlebars');
 
 //Server
 const PORT = process.env.PORT || 8080;
-const server = app.listen(PORT , "0.0.0.0", () => {
-    const host = server.address().address;
-    const port = server.address().port;
-    logGreen(`Server is up and running on http://${host}:${port}`);
-});
+const server = app.listen(PORT, () => logGreen('Server up and running on port ', PORT))
+
 
 // Server error
 server.on("error", (error) => {

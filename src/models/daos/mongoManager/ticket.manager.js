@@ -1,5 +1,4 @@
 const ticketModel = require('../../schemas/ticket.model')
-const HTTP_STATUS = require('../../../constants/api.constants')
 
 class TicketMongoDao {
     

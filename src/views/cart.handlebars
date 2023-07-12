@@ -2,19 +2,19 @@
     <h1 class="cart-title">Carrito</h1>
     <div class="cart-list" id={{cart._id}}>
     {{#if cart.products}}
-        <button onclick="clearCart(``{{cart._id}})" class="">Limpiar carrito</button>
+        <button onclick="clearCart(``{{cart._id}})" >Limpiar carrito</button>
         {{#each cart.products}}
             <div id={{product._id}} class="product-item">
                 <p class="product-title">{{product.title}}</p>
                 <p class="product-price">${{product.price}}</p>
                 <p class="product-amount">Cantidad: <span class="quantity-tag">{{quantity}}</span></p>
                 <p class="subtotal">Subtotal: ${{#multiply product.price quantity}}{{/multiply}}</p>
-                <button onclick="removeProduct(`{{cart._id}}`,`{{product._id}}`)" class="" >Quitar</button>
+                <button onclick="removeProduct(`{{cart._id}}`,`{{product._id}}`)">Borrar producto</button>
             </div>
         {{/each}}
-        <button onclick="purchase(`{{cart._id}}`)" class="">Comprar</button>
+        <button onclick="purchase(`{{cart._id}}`)">Comprar</button>
     {{else}}
-        <p class="">¡Todavía no has añadido ningún producto!</p>
+        <p class="">¡Todavía no se han añadido productos!</p>
     {{/if}}
     </div>
 </div>

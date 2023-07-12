@@ -46,6 +46,7 @@ const initializePassport = () =>{
                     age,
                     password: createHash(password),
                     cart: cart._id,
+                    lastConnection: new Date(),
                 }
                 if(req.file){
                     const paths = {
@@ -76,7 +77,6 @@ const initializePassport = () =>{
                         email: ADMIN_NAME,
                         password: ADMIN_PASSWORD,
                         role: 'admin',
-                        cart: '640e0351f496d9111957b2de'
                     }
                     return done(null, user)
                 }
@@ -114,6 +114,7 @@ const initializePassport = () =>{
                         email: userData.email || ' ',
                         password: ' ',
                         githubLogin: userData.login,
+                        lastConnection: new Date(),
                         cart: cart._id
                     }
                     const userPayload = new AddUserDTO(newUser)

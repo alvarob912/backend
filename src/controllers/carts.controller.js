@@ -33,6 +33,7 @@ class CartsController{
     static async addCart(req, res, next) {
         try {
             const addCart = await cartsService.createCart()
+            req.logger.info('New cart created')
             const response = apiSuccessResponse(addCart)
             res.status(HTTP_STATUS.CREATED).json(response)
         } catch (error) {

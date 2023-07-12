@@ -32,16 +32,10 @@ const seeTicketButton = async (tid) =>{
     cartBody.appendChild(ticketButton)
 }
 
-const showThanks = () =>{
-    const thanksTag = document.createElement('p')
-    thanksTag.innerText = 'Gracias por elegirnos. ¡Disfruta tu compra!'
-    thanksTag.style.color = '#ccc' 
-    cartBody.appendChild(thanksTag)
-}
 
 const purchase = async(cid) =>{
     await fetch(`/api/carts/${cid}/purchase`,{
-        method: 'put'
+        method: 'PUT'
     })
     .then(response => {
         if(response.ok){
@@ -55,6 +49,5 @@ const purchase = async(cid) =>{
         seeTicketButton(response.payload.newTicket._id)
     })
     cartList.remove()
-    showThanks()
 }
 

@@ -1,5 +1,5 @@
 const cartModel = require('../../schemas/cart.models.js')
-const { logCyan } = require('../../../utils/console.utils')
+
 class CartMongoDao {
 
     async getAll() {
